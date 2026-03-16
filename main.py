@@ -1,8 +1,18 @@
 from fastapi import FastAPI, UploadFile, File
 import fitz  # This is the PyMuPDF library
 from google import genai #day2
+from google.genai import types # <--- NEW: To configure the AI's strict rules
+from pydantic import BaseModel # <--- NEW: The tool that creates our "Bento Box"
+import json # <--- NEW: Built-in tool to clean up the final output
 
-client =genai.Client(api_key="xxx")
+# 1. Define the exact "Bento Box" format we want the AI to return
+class ResumeData(BaseModel):
+    full_name: str
+    role_title: str
+    phone_number: str
+    top_5_technical_skills: list[str]
+
+client =genai.Client(api_key="AIzaSyCA7n_zB9VhJH-oyuyEdLOquRcKShYt1zU")
 
 app = FastAPI(
     title="Pdf Upload API",
@@ -37,7 +47,11 @@ async def upload_file(file: UploadFile =File(...)):
     # 5. Send the text to Gemini
     response= client.models.generate_content(
         model='gemini-2.5-flash',
-        contents= ai_prompt
+        contents= ai_prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type='application/json',# <--- Tell it we strictly want JSON
+            response_schema=ResumeData,
+        ),
     )
 
     return{
@@ -48,6 +62,5 @@ async def upload_file(file: UploadFile =File(...)):
             # otherwise, a 3-page resume will flood your screen!
             #"text_preview": extracted_text[:500]
 
-            "ai_extacted_datas": response.text
-   
+            "ai_extacted_datas": json.loads(response.text) # <--- Convert the AI's JSON string back into a Python dictionary   
     }
