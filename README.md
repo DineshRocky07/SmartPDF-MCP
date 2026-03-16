@@ -1,7 +1,7 @@
 # SmartPDF-MCP
 📑 SmartPDF-MCP: Professional Document Extraction
 A high-performance FastAPI tool that uses PyMuPDF to transform messy PDF documents into clean, usable data.
-🚀 What This Project Does (The Journey)
+🚀 What This Project Does (The Journey) 
 Part 1: The API Gateway (The Menu)
 We built a professional API foundation using FastAPI.
 The Result: An interactive dashboard (Swagger UI) that allows anyone to upload files securely.
