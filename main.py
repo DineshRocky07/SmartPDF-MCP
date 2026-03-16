@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 import fitz  # This is the PyMuPDF library
 from google import genai #day2
 
-client =genai.Client(api_key="AIzaSyDzH8rC2n-XlqB1BiA-xghQ3W2xMAYRMdw")
+client =genai.Client(api_key="xxx")
 
 app = FastAPI(
     title="Pdf Upload API",
