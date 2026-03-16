@@ -24,3 +24,20 @@ The internal name for PyMuPDF. It’s the "brain" that knows how to read PDF for
 FastAPI: The high-speed web framework.
 PyMuPDF (fitz): The industry-standard engine for PDF manipulation.
 Uvicorn: The "engine" that keeps our server running.
+
+Part 3: The AI Brain (The Head Chef)
+We connected our data extraction pipeline to Google's Gemini 2.5 Flash AI model using the new google-genai SDK.
+
+The Result: Instead of just spitting out a messy wall of raw text, the API now sends the text to Gemini. The AI reads it, understands the context, and intelligently extracts the candidate's exact Name, Role, Phone Number, and Technical Skills directly into the Swagger UI.
+
+Real-World Value: This bridges the gap between traditional backend code and modern AI. We aren't just reading data anymore; we are understanding it.
+
+Add these to your "📖 Simple Coding Dictionary":
+genai.Client (The Waiter):
+This is our secure connection to Google. It uses our API key to prove we are allowed in the restaurant, and it carries our raw data (the ingredients) to the AI model (the chef).
+
+client.models.generate_content (The Order):
+This is the action command. It tells the specific "Flash" chef (which is lightning-fast at reading documents) to look at our prompt and cook up an intelligent summary.
+
+Add this to your "🛠️ Tech Stack":
+Google GenAI SDK: The official Python library connecting our server to the Gemini 2.5 Flash model.
