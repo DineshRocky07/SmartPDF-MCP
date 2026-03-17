@@ -16,7 +16,7 @@ class ResumeData(BaseModel):
     phone_number: str
     top_5_technical_skills: list[str]
 
-client =genai.Client(api_key="xxxx-xxxxx")
+client =genai.Client(api_key="xxxx")
 
 app = FastAPI(
     title="Pdf Upload API",
