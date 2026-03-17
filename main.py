@@ -1,34 +1,29 @@
-from fastapi import FastAPI, UploadFile, File
+#from fastapi import FastAPI, UploadFile, File
 import fitz  # This is the PyMuPDF library
 from google import genai #day2
-from google.genai import types # <--- NEW: To configure the AI's strict rules
-from pydantic import BaseModel # <--- NEW: The tool that creates our "Bento Box"
-import json # <--- NEW: Built-in tool to clean up the final output
+from google.genai import types # <--- To configure the AI's strict rules
+from pydantic import BaseModel # <---  The tool that creates our "Bento Box"
+import json # <-- Built-in tool to clean up the final output
+from mcp.server.fastmcp import FastMCP # <--- NEW: The MCP Server library
 
-# 1. Define the exact "Bento Box" format we want the AI to return
+# 1. Initialize the MCP Server (This replaces FastAPI)
+mcp = FastMCP("SmartPDF-MCP")
+
+# 2. Define the exact "Bento Box" format we want the AI to return
 class ResumeData(BaseModel):
     full_name: str
     role_title: str
     phone_number: str
     top_5_technical_skills: list[str]
 
-client =genai.Client(api_key="AIzaSyCA7n_zB9VhJH-oyuyEdLOquRcKShYt1zU")
+client =genai.Client(api_key="xxxxx-xxxx")
 
-app = FastAPI(
-    title="Pdf Upload API",
-    description="A simple API to upload files using FastAPI",
-    version="1.0.0",
-)
-@app.get("/")
-async def root():
-    return {"message": "server is running in the port http://127.0.0.1:8000/docs to see the swagger documentation"}
-
-@app.post("/upload/")
-async def upload_file(file: UploadFile =File(...)):
-    # 1. Read the uploaded file into your computer's memory
-    file_content =await file.read()
+@mcp.tool()
+def ExtractResumeData(file_path: str ) -> str:
+    """Reads a PDF resume from the local computer and extracts structured JSON data."""
+    
     # 2. Open the PDF using the fitz library
-    doc = fitz.open(stream=file_content,filetype='pdf')
+    doc = fitz.open(file_path)
     # 3. Loop through every page and pull out the text
     extracted_text = ""
     for page in doc:
@@ -54,13 +49,4 @@ async def upload_file(file: UploadFile =File(...)):
         ),
     )
 
-    return{
-            "filename": file.filename,
-            "content_type": file.content_type,
-            "status": "File uploaded successfully..",
-            # We slice [:500] so it only shows the first 500 characters in Swagger,
-            # otherwise, a 3-page resume will flood your screen!
-            #"text_preview": extracted_text[:500]
-
-            "ai_extacted_datas": json.loads(response.text) # <--- Convert the AI's JSON string back into a Python dictionary   
-    }
+    return response.text
