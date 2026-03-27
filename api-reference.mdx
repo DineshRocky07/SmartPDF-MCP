@@ -1,0 +1,55 @@
+---
+title: "MCP Tool Reference"
+description: "Detailed specification for the available AI Agent tools and expected JSON schemas."
+---
+
+## Available Tools
+
+Our MCP server currently exposes one primary tool for autonomous AI agents. 
+
+---
+
+### `find_candidates_by_skill`
+
+This tool allows an AI agent to scan a local directory of PDF resumes, pre-filter them for a specific technical keyword using Python, and extract deep structured data using Gemini 2.5 Flash.
+
+#### Input Parameters
+
+Agents must provide the following arguments when calling this tool:
+
+<ParamField path="skill" type="string" required>
+  The specific technical skill to search for (e.g., "Java", "Python", "Spring Boot").
+</ParamField>
+
+<ParamField path="directory_path" type="string" default="./resumes">
+  The local folder path where the PDF resumes are stored.
+</ParamField>
+
+#### Expected Output
+
+The tool enforces strict data validation via Pydantic. It returns a structured JSON array of candidates matching the requested skill.
+
+<ResponseField name="candidates" type="array">
+  <Expandable title="Candidate Object Properties" defaultOpen={true}>
+    <ResponseField name="full_name" type="string">
+      The candidate's extracted full name.
+    </ResponseField>
+    <ResponseField name="role" type="string">
+      The candidate's current or targeted job title.
+    </ResponseField>
+    <ResponseField name="phone_number" type="string">
+      The extracted contact number.
+    </ResponseField>
+    <ResponseField name="top_5_technical_skills" type="array of strings">
+      A list of the candidate's top technical proficiencies.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Testing with an Agent
+
+If you are testing this integration inside an MCP-compatible client (like Claude Desktop), you can trigger the pipeline using a natural language prompt like this:
+
+> *"Please use the `find_candidates_by_skill` tool to find all candidates who know 'Java' in the resumes folder. Present the results to me in a clean markdown table."*
